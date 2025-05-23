@@ -1,0 +1,59 @@
+@extends('layouts.app')
+
+@section('title', 'Edit Mahasiswa')
+
+@section('content')
+    <div class="container mt-5">
+        <h1>Edit Mahasiswa</h1>
+        @if (session('error'))
+            <div class="alert alert-danger">{{ session('error') }}</div>
+        @endif
+
+        @if (isset($mahasiswa) && is_array($mahasiswa) && !empty($mahasiswa) && isset($mahasiswa['npm']))
+            <form action="{{ route('mahasiswa.update', $mahasiswa['npm']) }}" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="mb-3">
+                    <label for="npm" class="form-label">NPM</label>
+                    <input type="text" name="npm" class="form-control" value="{{ $mahasiswa['npm'] }}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="nama_mahasiswa" class="form-label">Nama Mahasiswa</label>
+                    <input type="text" name="nama_mahasiswa" class="form-control @error('nama_mahasiswa') is-invalid @enderror" value="{{ old('nama_mahasiswa', $mahasiswa['nama_mahasiswa']) }}">
+                    @error('nama_mahasiswa')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="mb-3">
+                    <label for="id_kelas" class="form-label">Kelas</label>
+                    <select name="id_kelas" class="form-control @error('id_kelas') is-invalid @enderror">
+                        <option value="">Pilih Kelas</option>
+                        @foreach ($kelas as $k)
+                            <option value="{{ $k['id_kelas'] }}" {{ old('id_kelas', $mahasiswa['id_kelas']) == $k['id_kelas'] ? 'selected' : '' }}>{{ $k['nama_kelas'] }}</option>
+                        @endforeach
+                    </select>
+                    @error('id_kelas')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="mb-3">
+                    <label for="kode_prodi" class="form-label">Prodi</label>
+                    <select name="kode_prodi" class="form-control @error('kode_prodi') is-invalid @enderror">
+                        <option value="">Pilih Prodi</option>
+                        @foreach ($prodi as $p)
+                            <option value="{{ $p['kode_prodi'] }}" {{ old('kode_prodi', $mahasiswa['kode_prodi']) == $p['kode_prodi'] ? 'selected' : '' }}>{{ $p['nama_prodi'] }}</option>
+                        @endforeach
+                    </select>
+                    @error('kode_prodi')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                <button type="submit" class="btn btn-primary">Update</button>
+                <a href="{{ route('mahasiswa.index') }}" class="btn btn-secondary">Kembali</a>
+            </form>
+        @else
+            <div class="alert alert-warning">Data mahasiswa tidak ditemukan.</div>
+            <a href="{{ route('mahasiswa.index') }}" class="btn btn-secondary">Kembali</a>
+        @endif
+    </div>
+@endsection
